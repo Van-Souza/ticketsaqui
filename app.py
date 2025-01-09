@@ -11,12 +11,12 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'  # Página de login
 
 # Configuração da API
-API_BASE_URL = "https://homolog.atendeaqui.com.br/api/tickets/"
-API_TOKEN = "d0a5a3257169dacffc503c8d8149f6b7381e30ad"
-queue_slug = 'avc'
+API_BASE_URL = "https://atendeaqui.com.br/api/tickets/"
+API_TOKEN = "0c710c5ee5449951ce6ae78ad0784d72f16ef159"
+queue_slug = 'soli_cliente'
 
 # Mock de banco de dados de usuários (deve ser substituído por um banco real)
-users = {'user@example.com': {'password': 'password123'}}
+users = {'admin@mupisystems': {'password': 'Mupi2024'}}
 
 # Modelo de usuário para Flask-Login
 class User(UserMixin):
