@@ -1,23 +1,195 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Ticket</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilo global */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2c3e50); /* Fundo gradiente escuro */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto; /* Permite rolagem se necessário */
+        }
+
+        /* Contêiner das partículas */
+        #particles-js {
+            position: fixed; /* Fixo para cobrir toda a tela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Contêiner principal */
+        .container {
+            z-index: 1;
+            position: relative;
+            max-width: 800px; /* Largura máxima aumentada */
+            width: 90%; /* Usa 90% da largura da tela */
+            padding: 20px;
+            margin: 20px auto; /* Centraliza e adiciona margens */
+        }
+
+        /* Estilo do card */
+        .card {
+            background: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente */
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px); /* Efeito de desfoque */
+            padding: 15px; /* Padding reduzido */
+            margin: 0 auto; /* Centraliza o card */
+        }
+
+        .card-header {
+            background: transparent;
+            border: none;
+            text-align: center;
+            padding: 15px 0; /* Padding reduzido */
+        }
+
+        .card-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 15px; /* Padding reduzido */
+        }
+
+        /* Campos do formulário */
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            color: #fff;
+        }
+
+        textarea.form-control {
+            max-height: 100px; /* Limita a altura do textarea */
+        }
+
+        .form-label {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Botões */
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            background: #3498db; /* Azul */
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-warning {
+            background: #f39c12; /* Laranja */
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .btn-danger {
+            background: #e74c3c; /* Vermelho */
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        /* Mensagens de erro ou sucesso */
+        .alert {
+            border-radius: 10px;
+            text-align: center;
+            padding: 10px; /* Padding reduzido */
+            position: fixed; /* Fixo no topo da tela */
+            top: 20px; /* Distância do topo */
+            left: 50%; /* Centralizado horizontalmente */
+            transform: translateX(-50%); /* Ajuste fino para centralização */
+            z-index: 1000; /* Garante que fique acima de tudo */
+            width: 90%; /* Largura máxima */
+            max-width: 500px; /* Largura máxima para telas maiores */
+            opacity: 1; /* Inicialmente visível */
+            transition: opacity 1s ease-out; /* Efeito de fade-out */
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.9); /* Verde mais destacado */
+            border: none;
+            color: #fff;
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.9); /* Vermelho mais destacado */
+            border: none;
+            color: #fff;
+        }
+
+        .alert-info {
+            background: rgba(52, 152, 219, 0.9); /* Azul mais destacado */
+            border: none;
+            color: #fff;
+        }
+
+        /* Efeito fade-out */
+        .fade-out {
+            opacity: 0;
+        }
+
+        /* Ajuste para o campo de informações */
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-container .alert-info {
+            flex: 1;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+
+        .info-container .btn-danger {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
+    <!-- Contêiner das partículas -->
+    <div id="particles-js"></div>
+
     <div class="container">
-        <!-- Adicionar o link de logout no início da página -->
-        {% if current_user.is_authenticated %}
-        <div class="text-end">
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
-        </div>
-        {% endif %}
-
-        <h1 class="text-center mb-4">Criar um Novo Ticket</h1>
-
         <!-- Exibe a mensagem de sucesso ou erro -->
         {% if success_message %}
         <div class="alert alert-success" role="alert" id="success-alert">
@@ -25,65 +197,179 @@
         </div>
         {% elif error_message %}
         <div class="alert alert-danger" role="alert" id="error-alert">
-            {{ error_message }}
+            <strong>Erro:</strong> {{ error_message }}
+            {% if error_details %}
+            <br><small>{{ error_details }}</small>
+            {% endif %}
         </div>
         {% endif %}
 
-        <!-- Exibe o Token e o Slug da fila do usuário atual -->
-        {% if current_user.is_authenticated %}
-        <div class="alert alert-info" role="alert">
-            <strong>Token:</strong> {{ current_user.token }}<br>
-            <strong>Slug da Fila:</strong> {{ current_user.queue_slug }}
+        <div class="card">
+            <div class="card-header">
+                <h1>Criar um Novo Ticket</h1>
+            </div>
+            <div class="card-body">
+                <!-- Link de logout e informações na mesma linha -->
+                {% if current_user.is_authenticated %}
+                <div class="info-container">
+                    <!-- Campo de informações -->
+                    <div class="alert alert-info" role="alert">
+                        <strong>Token:</strong> {{ current_user.token }}<br>
+                        <strong>Slug da Fila:</strong> {{ current_user.queue_slug }}<br>
+                        <strong>Ambiente:</strong> {{ "Homologação" if current_user.environment == "homolog" else "Produção" }}
+                    </div>
+
+                    <!-- Botão de sair -->
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+                </div>
+                {% endif %}
+
+                <!-- Botão para editar credenciais -->
+                {% if current_user.is_authenticated %}
+                <div class="text-center mb-4">
+                    <a href="{{ url_for('edit_credentials') }}" class="btn btn-warning">Editar Credenciais</a>
+                </div>
+                {% endif %}
+
+                <!-- Formulário para criar um novo ticket -->
+                <form method="POST" action="/" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título*</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                        <div class="invalid-feedback">
+                            O título é obrigatório.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrição*</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        <div class="invalid-feedback">
+                            A descrição é obrigatória.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Nome Completo*</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        <div class="invalid-feedback">
+                            O nome completo é obrigatório.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telefone*</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required>
+                        <div class="invalid-feedback">
+                            O telefone é obrigatório.
+                        </div>
+                    </div>
+
+                    <!-- Botão de criar ticket dentro do formulário -->
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Criar Ticket</button>
+                </form>
+            </div>
         </div>
-
-        <!-- Botão para editar credenciais -->
-        <div class="text-center mb-4">
-            <a href="{{ url_for('edit_credentials') }}" class="btn btn-warning">Editar Credenciais</a>
-        </div>
-        {% endif %}
-
-        <!-- Formulário para criar um novo ticket -->
-        <form method="POST" action="/" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="title" class="form-label">Título*</label>
-                <input type="text" class="form-control" id="title" name="title" required>
-                <div class="invalid-feedback">
-                    O título é obrigatório.
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="description" class="form-label">Descrição*</label>
-                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
-                <div class="invalid-feedback">
-                    A descrição é obrigatória.
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="full_name" class="form-label">Nome Completo*</label>
-                <input type="text" class="form-control" id="full_name" name="full_name" required>
-                <div class="invalid-feedback">
-                    O nome completo é obrigatório.
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="email" name="email">
-            </div>
-
-            <div class="mb-3">
-                <label for="phone" class="form-label">Telefone*</label>
-                <input type="text" class="form-control" id="phone" name="phone" required>
-                <div class="invalid-feedback">
-                    O telefone é obrigatório.
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Criar Ticket</button>
-        </form>
     </div>
+
+    <!-- Script do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script do particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#3498db"  /* Azul */
+                },
+                "shape": {
+                    "type": "circle"
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false
+                },
+                "size": {
+                    "value": 3,
+                    "random": true
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#3498db",  /* Azul */
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": false,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 200,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
 
     <!-- Script para validação do formulário -->
     <script>
@@ -129,7 +415,5 @@
             }
         });
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -4,32 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login e Cadastro</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilo para o botão que alterna os formulários */
-        .form-container {
+        /* Estilo global */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2c3e50); /* Fundo gradiente escuro */
+            color: #fff;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 10; /* Garante que os formulários apareçam sobre as partículas */
-            position: relative;
+            height: 100vh;
+            overflow: hidden;
         }
-        .form-container > div {
-            margin: 15px;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        /* Definir z-index para garantir que o fundo de partículas não sobreponha os formulários */
+
+        /* Contêiner das partículas */
         #particles-js {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffffff; /* Fundo branco */
-            z-index: -1;
+            z-index: 0;
+        }
+
+        /* Contêiner principal */
+        .container {
+            z-index: 1;
+            position: relative;
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Estilo dos formulários */
+        .form-container {
+            background: rgba(255, 255, 255, 0.1); /* Fundo semi-transparente */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px); /* Efeito de desfoque */
+            transition: all 0.3s ease;
+        }
+
+        .form-container > div {
+            display: none; /* Oculta todos os formulários por padrão */
+        }
+
+        .form-container > div.active {
+            display: block; /* Exibe o formulário com a classe "active" */
+        }
+
+        /* Título */
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Campos do formulário */
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            color: #fff;
+        }
+
+        .form-label {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Botões */
+        .btn-primary, .btn-success {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db; /* Azul */
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #2ecc71; /* Verde */
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        /* Links */
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        /* Mensagens de erro */
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.8); /* Vermelho */
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -38,8 +140,8 @@
     <div id="particles-js"></div>
 
     <div class="container">
-        <h1 class="text-center mb-4">Login</h1>
-        
+        <h1>Login</h1>
+
         <!-- Exibe a mensagem de erro -->
         {% if error_message %}
         <div class="alert alert-danger" role="alert">
@@ -49,7 +151,7 @@
 
         <div class="form-container">
             <!-- Formulário de Login -->
-            <div id="login-form">
+            <div id="login-form" class="active">
                 <form method="POST" action="/login" class="needs-validation" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">E-mail*</label>
@@ -67,7 +169,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
                 </form>
 
                 <hr>
@@ -79,7 +181,7 @@
             </div>
 
             <!-- Formulário de Cadastro (inicialmente oculto) -->
-            <div id="register-form" style="display: none;">
+            <div id="register-form">
                 <form method="POST" action="/register" class="needs-validation" novalidate>
                     <div class="mb-3">
                         <label for="new_email" class="form-label">E-mail*</label>
@@ -101,7 +203,16 @@
                         <input type="text" class="form-control" id="queue_slug" name="queue_slug" required>
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+                    <!-- Campo para escolher o ambiente (Homologação ou Produção) -->
+                    <div class="mb-3">
+                        <label for="environment" class="form-label">Ambiente*</label>
+                        <select class="form-select" id="environment" name="environment" required>
+                            <option value="homolog">Homologação</option>
+                            <option value="prod">Produção</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
 
                     <hr>
 
@@ -118,14 +229,14 @@
     <script>
         document.getElementById('show-register-form').addEventListener('click', function(event) {
             event.preventDefault();
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
         });
 
         document.getElementById('show-login-form').addEventListener('click', function(event) {
             event.preventDefault();
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
         });
 
         // Validação do formulário (Bootstrap)
@@ -146,9 +257,8 @@
         })();
     </script>
 
-    <!-- Adicionando os scripts do particles.js e stats.js -->
-    <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="http://threejs.org/examples/js/libs/stats.min.js"></script>
+    <!-- Adicionando o script do particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
         particlesJS("particles-js", {
             "particles": {
@@ -160,47 +270,23 @@
                     }
                 },
                 "color": {
-                    "value": "#0000ff"  /* Mudando a cor das partículas para azul */
+                    "value": "#3498db"  /* Azul */
                 },
                 "shape": {
-                    "type": "circle",
-                    "stroke": {
-                        "width": 0,
-                        "color": "#000000"
-                    },
-                    "polygon": {
-                        "nb_sides": 5
-                    },
-                    "image": {
-                        "src": "img/github.svg",
-                        "width": 100,
-                        "height": 100
-                    }
+                    "type": "circle"
                 },
                 "opacity": {
                     "value": 0.5,
-                    "random": false,
-                    "anim": {
-                        "enable": false,
-                        "speed": 1,
-                        "opacity_min": 0.1,
-                        "sync": false
-                    }
+                    "random": false
                 },
                 "size": {
                     "value": 3,
-                    "random": true,
-                    "anim": {
-                        "enable": false,
-                        "speed": 40,
-                        "size_min": 0.1,
-                        "sync": false
-                    }
+                    "random": true
                 },
                 "line_linked": {
                     "enable": true,
                     "distance": 150,
-                    "color": "#0000ff",  /* Mudando a cor das linhas de conexão para azul */
+                    "color": "#3498db",  /* Azul */
                     "opacity": 0.4,
                     "width": 1
                 },
@@ -224,7 +310,7 @@
                 "events": {
                     "onhover": {
                         "enable": true,
-                        "mode": "grab"  /* Ativar a interatividade de pegar as partículas */
+                        "mode": "grab"
                     },
                     "onclick": {
                         "enable": false,
@@ -234,14 +320,14 @@
                 },
                 "modes": {
                     "grab": {
-                        "distance": 383.61638361638364,
+                        "distance": 200,
                         "line_linked": {
                             "opacity": 1
                         }
                     },
                     "bubble": {
-                        "distance": 419.58041958041963,
-                        "size": 47.952047952047955,
+                        "distance": 400,
+                        "size": 40,
                         "duration": 2,
                         "opacity": 8,
                         "speed": 3

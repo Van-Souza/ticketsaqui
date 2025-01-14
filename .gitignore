@@ -1,4 +1,4 @@
 # Local Netlify folder
 .netlify
-
+manager_db.py
 .codegpt
