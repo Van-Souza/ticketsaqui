@@ -2,3 +2,4 @@
 .netlify
 manager_db.py
 .codegpt
+users.db
