@@ -9,7 +9,6 @@ import logging
 # Configuração do Flask
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'supersecretkey')  # Chave secreta para sessões
-app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Configuração do banco de dados
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Banco de dados SQLite
@@ -24,6 +23,9 @@ login_manager.login_view = 'login'  # Página de login
 # Configuração de logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Desativa o cache de templates durante o desenvolvimento
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Modelo de usuário para banco de dados (SQLAlchemy)
 class User(UserMixin, db.Model):
